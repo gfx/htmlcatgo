@@ -12,6 +12,7 @@ import "html/template"
 import "flag"
 import "math/rand"
 import "strconv"
+import "io/ioutil"
 
 type Client struct {
 	out  chan string
@@ -190,44 +191,10 @@ func main() {
 }
 
 func executeIndexTemplate(out io.Writer) {
-	var t string = `
-<!DOCTYPE html>
-<html>
-<head>
-  <title>htmlcatgo</title>
-</head>
-<body>
-
-<section>
-  <pre id="logs"></pre>
-</section>
-
-<script>
-var logs = document.getElementById('logs');
-var es = new EventSource('/stream');
-es.onmessage = function(ev) {
-    if (window.scrollY + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
-        var scrollToBottom = true;
-    }
-
-    var html = ev.data;
-
-    var log = document.createElement('div');
-    log.innerHTML =  html + "\n";
-
-    while (log.firstChild) {
-        logs.appendChild( log.firstChild );
-    }
-
-    document.title = html.replace(/<.*?>/g, '') + ' - htmlcatgo';
-    if (scrollToBottom) {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
-};
-</script>
-</body>
-</html>
-`
-	var indexTemplate = template.Must(template.New("index").Parse(t))
+	t, err := ioutil.ReadFile("template/main.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	var indexTemplate = template.Must(template.New("index").Parse(string(t)))
 	indexTemplate.Execute(out, nil)
 }

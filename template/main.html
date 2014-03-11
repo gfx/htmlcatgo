@@ -1,7 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>htmlcatgo</title>
+  <title>logcat for iOS simulator</title>
+
+  <style>
+    .Warning {
+      color: gray;
+    }
+    .Notice {
+      color: gray;
+    }
+    .Error {
+      color: black;
+    }
+
+    .app {
+      color: gray;
+    }
+  </style>
 </head>
 <body>
 
@@ -17,7 +33,7 @@ es.onmessage = function(ev) {
         var scrollToBottom = true;
     }
 
-    var html = ev.data;
+    var html = process(ev.data);
 
     var log = document.createElement('div');
     log.innerHTML =  html + "\n";
@@ -31,6 +47,28 @@ es.onmessage = function(ev) {
         window.scrollTo(0, document.body.scrollHeight);
     }
 };
+
+// Mar 11 23:50:54 gfx-mba.local Passbook[80061] <Warning>: Pass library connection interrupted.
+function process(text) {
+  var matched = /(\w+ \d+ \d\d:\d\d:\d\d) (\S+) (\w+)\[(\d+)\] <(\w+)>: (.+)/.exec(text);
+  if (matched) {
+    var params = {
+      timestamp: matched[1],
+      host: matched[2],
+      app: matched[3],
+      pid: matched[4],
+      tag: matched[5],
+      message: matched[6],
+    };
+
+    text = "<span class='app'>%app%[%pid%]</span> %message%".replace(/%(\w+)%/g, function (matched, item) {
+      return params[item].replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    });
+  }
+
+  return text;
+
+}
 </script>
 </body>
 </html>

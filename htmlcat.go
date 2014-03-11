@@ -13,6 +13,7 @@ import "flag"
 import "math/rand"
 import "strconv"
 import "io/ioutil"
+import "path"
 
 type Client struct {
 	out  chan string
@@ -174,7 +175,7 @@ func main() {
 	})
 
 	if len(*exec) == 0 {
-		log.Printf("%s: http://%s:%d\n", os.Args[0], *host, *port)
+		log.Printf("%s: http://%s:%d\n", path.Base(os.Args[0]), *host, *port)
 	} else {
 		go func() {
 			cmd := osexec.Command(*exec, fmt.Sprintf("http://%s:%d", *host, *port))

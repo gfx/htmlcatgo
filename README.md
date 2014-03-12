@@ -1,34 +1,29 @@
-# htmlcatgo
+# ios-simulator-logcat
 
-golang clone of htmlcat https://github.com/motemen/App-htmlcat - stdin to your browser
-
-## Feature
-
-`htmlcatgo` brings stdin input to html with creating new HTTP server.
+`ios-simulator-logcat` brings stdin input to html with creating new HTTP server.
 
 This requires your browser to support Server-Sent Event.
 
 ## Install
 
 ```sh
-$ go get github.com/hakobe/htmlcatgo
-$ go install github.com/hakobe/htmlcatgo
+$ git clone https://github.com/gfx/ios-simulator-logcat.git
 ```
 
 ## Usage
 
 ```sh
-$ tail -F /var/log/message | htmlcatgo
+ios-simulator-logcat$ make
 ```
 
 You will see message below
 
 ```sh
-2013/12/16 08:15:02 htmlcatgo: http://localhost:45273
+2013/12/16 08:15:02 ios-simulator-logcat: http://localhost:45273
 ```
-
-and you can see output of `tail -F /var/log/message` at http://localhost:45273 on your browser.
 
 ## Author
 
-Yohei Fushii <hakobe@gmail.com>
+FUJI, Goro (gfx) <gfuji@cpan.org>
+
+This is forked from [htmlcatgo](https://github.com/hakobe/htmlcatgo), written by Yohei Fushii <hakobe@gmail.com>.

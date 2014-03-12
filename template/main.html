@@ -15,8 +15,20 @@
       color: black;
     }
 
-    .app {
-      color: gray;
+    .app1 {
+      color: #0000FF;
+    }
+    .app2 {
+      color: #8028E0;
+    }
+    .app3 {
+      color: #80F800;
+    }
+    .app4 {
+      color: #FFA070;
+    }
+    .app5 {
+      color: #FFD800;
     }
   </style>
 </head>
@@ -27,10 +39,11 @@
 </section>
 
 <script>
-jQuery(function ($) {
-  var logs = document.getElementById('logs');
-  var es = new EventSource('/stream');
-  es.onmessage = function(ev) {
+  jQuery(function ($) {
+
+    var logs = document.getElementById('logs');
+    var es = new EventSource('/stream');
+    es.onmessage = function(ev) {
       if (window.scrollY + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
           var scrollToBottom = true;
       }
@@ -48,32 +61,38 @@ jQuery(function ($) {
       if (scrollToBottom) {
           window.scrollTo(0, document.body.scrollHeight);
       }
-  };
+    };
 
-  // Mar 11 23:50:54 gfx-mba.local Passbook[80061] <Warning>: Pass library connection interrupted.
-  function process(text) {
-    var matched = /(\w+ \d+ \d\d:\d\d:\d\d) (\S+) (\w+)\[(\d+)\] <(\w+)>: (.+)/.exec(text);
-    if (matched) {
-      var params = {
-        timestamp: matched[1],
-        host: matched[2],
-        app: matched[3],
-        pid: matched[4],
-        tag: matched[5],
-        message: matched[6],
-      };
+    var i = 0;
+    var apps = {};
 
-      text = "<span class='app'>%app%[%pid%]</span> %message%".replace(/%(\w+)%/g, function (matched, item) {
-        return params[item].replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      });
+    // Mar 11 23:50:54 gfx-mba.local Passbook[80061] <Warning>: Pass library connection interrupted.
+    function process(text) {
+      var matched = /(\w+ \d+ \d\d:\d\d:\d\d) (\S+) ([\w\.\-_]+)\[(\d+)\] <(\w+)>: (.+)/.exec(text);
+      if (matched) {
+        var pid = matched[4];
+        apps[pid] = apps[pid] || (++i % 5);
+        var params = {
+          timestamp: matched[1],
+          host: matched[2],
+          app: matched[3],
+          pid: pid,
+          tag: matched[5],
+          message: matched[6],
+          appId: apps[pid],
+        };
+
+        text = "<span class='app%appId%'>%app%[%pid%]</span> %message%".replace(/%(\w+)%/g, function (matched, item) {
+          return String(params[item]).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        });
+      }
+
+      return text;
+
     }
 
-    return text;
 
-  }
-
-
-});
+  });
 </script>
 </body>
 </html>

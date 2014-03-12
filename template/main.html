@@ -5,6 +5,11 @@
   <title>logcat for iOS simulator</title>
 
   <style>
+    #logs {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+
     .Warning {
       color: gray;
     }
@@ -68,7 +73,7 @@
 
     // Mar 11 23:50:54 gfx-mba.local Passbook[80061] <Warning>: Pass library connection interrupted.
     function process(text) {
-      var matched = /(\w+ \d+ \d\d:\d\d:\d\d) (\S+) ([^\[]+)\[(\d+)\] <(\w+)>: (.+)/.exec(text);
+      var matched = /(\w+ \d+ \d\d:\d\d:\d\d) (\S+) ([^\[]+)\[(\d+)\] [<\(](\S+)[\)>] *: *(.+)/.exec(text);
       if (matched) {
         var pid = matched[4];
         apps[pid] = apps[pid] || ((++i % 5) + 1);

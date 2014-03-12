@@ -15,19 +15,19 @@
       color: black;
     }
 
-    .app1 {
+    .app0 {
       color: #0000FF;
     }
-    .app2 {
+    .app1 {
       color: #8028E0;
     }
-    .app3 {
-      color: #80F800;
+    .app2 {
+      color: #40C800;
     }
-    .app4 {
+    .app3 {
       color: #FFA070;
     }
-    .app5 {
+    .app4 {
       color: #FFD800;
     }
   </style>
@@ -68,7 +68,7 @@
 
     // Mar 11 23:50:54 gfx-mba.local Passbook[80061] <Warning>: Pass library connection interrupted.
     function process(text) {
-      var matched = /(\w+ \d+ \d\d:\d\d:\d\d) (\S+) ([\w\.\-_]+)\[(\d+)\] <(\w+)>: (.+)/.exec(text);
+      var matched = /(\w+ \d+ \d\d:\d\d:\d\d) (\S+) ([^\[]+)\[(\d+)\] <(\w+)>: (.+)/.exec(text);
       if (matched) {
         var pid = matched[4];
         apps[pid] = apps[pid] || (++i % 5);

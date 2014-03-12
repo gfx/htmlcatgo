@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script src="jquery.js"></script>
   <title>logcat for iOS simulator</title>
 
   <style>
@@ -26,49 +27,53 @@
 </section>
 
 <script>
-var logs = document.getElementById('logs');
-var es = new EventSource('/stream');
-es.onmessage = function(ev) {
-    if (window.scrollY + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
-        var scrollToBottom = true;
+jQuery(function ($) {
+  var logs = document.getElementById('logs');
+  var es = new EventSource('/stream');
+  es.onmessage = function(ev) {
+      if (window.scrollY + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+          var scrollToBottom = true;
+      }
+
+      var html = process(ev.data);
+
+      var log = document.createElement('div');
+      log.innerHTML =  html + "\n";
+
+      while (log.firstChild) {
+          logs.appendChild( log.firstChild );
+      }
+
+      document.title = html.replace(/<.*?>/g, '') + ' - htmlcatgo';
+      if (scrollToBottom) {
+          window.scrollTo(0, document.body.scrollHeight);
+      }
+  };
+
+  // Mar 11 23:50:54 gfx-mba.local Passbook[80061] <Warning>: Pass library connection interrupted.
+  function process(text) {
+    var matched = /(\w+ \d+ \d\d:\d\d:\d\d) (\S+) (\w+)\[(\d+)\] <(\w+)>: (.+)/.exec(text);
+    if (matched) {
+      var params = {
+        timestamp: matched[1],
+        host: matched[2],
+        app: matched[3],
+        pid: matched[4],
+        tag: matched[5],
+        message: matched[6],
+      };
+
+      text = "<span class='app'>%app%[%pid%]</span> %message%".replace(/%(\w+)%/g, function (matched, item) {
+        return params[item].replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      });
     }
 
-    var html = process(ev.data);
+    return text;
 
-    var log = document.createElement('div');
-    log.innerHTML =  html + "\n";
-
-    while (log.firstChild) {
-        logs.appendChild( log.firstChild );
-    }
-
-    document.title = html.replace(/<.*?>/g, '') + ' - htmlcatgo';
-    if (scrollToBottom) {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
-};
-
-// Mar 11 23:50:54 gfx-mba.local Passbook[80061] <Warning>: Pass library connection interrupted.
-function process(text) {
-  var matched = /(\w+ \d+ \d\d:\d\d:\d\d) (\S+) (\w+)\[(\d+)\] <(\w+)>: (.+)/.exec(text);
-  if (matched) {
-    var params = {
-      timestamp: matched[1],
-      host: matched[2],
-      app: matched[3],
-      pid: matched[4],
-      tag: matched[5],
-      message: matched[6],
-    };
-
-    text = "<span class='app'>%app%[%pid%]</span> %message%".replace(/%(\w+)%/g, function (matched, item) {
-      return params[item].replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    });
   }
 
-  return text;
 
-}
+});
 </script>
 </body>
 </html>

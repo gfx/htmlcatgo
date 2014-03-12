@@ -174,6 +174,15 @@ func main() {
 		executeIndexTemplate(res)
 	})
 
+	http.HandleFunc("/jquery.js", func(res http.ResponseWriter, req *http.Request) {
+		t, err := ioutil.ReadFile("static/jquery-2.1.0.min.js")
+		if err != nil {
+			log.Fatal(err)
+		}
+		res.Header().Set("Content-Type", "application/javascript")
+		res.Write(t)
+	})
+
 	if len(*exec) == 0 {
 		log.Printf("%s: http://%s:%d\n", path.Base(os.Args[0]), *host, *port)
 	} else {

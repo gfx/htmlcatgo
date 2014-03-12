@@ -2,6 +2,8 @@
 
 `ios-simulator-logcat` brings stdin input to html with creating new HTTP server.
 
+![screenshot](screenshot.png)
+
 This requires your browser to support Server-Sent Event.
 
 ## Install
